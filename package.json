@@ -1,0 +1,38 @@
+{
+    "name": "mab-dom",
+    "version": "0.1.0",
+    "description": "Minimal utilities for working with the HTML DOM.",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist/*.js",
+        "dist/*.d.ts"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/markashleybell/mab-dom.git"
+    },
+    "keywords": [
+        "html",
+        "dom"
+    ],
+    "author": "Mark Ashley Bell",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/markashleybell/mab-dom/issues"
+    },
+    "homepage": "https://github.com/markashleybell/mab-dom#readme",
+    "devDependencies": {
+        "@tsconfig/recommended": "^1.0.1",
+        "copyfiles": "^2.4.1",
+        "del-cli": "^3.0.1",
+        "npm-run-all": "^4.1.5",
+        "typescript": "^4.2.4"
+    },
+    "scripts": {
+        "clean": "del-cli dist test",
+        "compile": "tsc -p tsconfig.json",
+        "compile-test": "tsc -p tsconfig-test.json",
+        "build": "run-s clean compile compile-test"
+    }
+}
