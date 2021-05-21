@@ -60,6 +60,10 @@ class DOM {
     public val(index?: number): string {
         const input = (index ? this.el[index] : this.el[0]);
 
+        if (input instanceof HTMLSelectElement) {
+            return (input as HTMLSelectElement).value
+        }
+
         return input instanceof HTMLInputElement 
             ? (input as HTMLInputElement).value 
             : null;
