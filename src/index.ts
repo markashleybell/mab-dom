@@ -8,9 +8,11 @@ class DOM {
     constructor(public selectorOrElement: string | HTMLElement | NodeListOf<HTMLElement>, parent?: HTMLElement[]) {
         if (typeof selectorOrElement === 'string') {
             if (parent) {
-                const tmp = parent.map(el => [].slice.call(el.querySelectorAll(selectorOrElement))).filter(x => x.length);
+                const elements = parent
+                    .map(el => [].slice.call(el.querySelectorAll(selectorOrElement)))
+                    .filter(x => x.length);
                 
-                this.el = [].concat(...tmp);
+                this.el = [].concat(...elements);
             } else {
                 this.el = [].slice.call(document.querySelectorAll(selectorOrElement as string));
             }
