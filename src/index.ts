@@ -61,18 +61,22 @@ class DOM {
         return new DOM(selector, this.el);
     }
 
-    public val(value?: number | string): string | void {
+    public val(value?: number | string): string {
         if (!value) {
             return this.el.map(el => this.elementWithValue(el)?.value).join();
         }
+
+        const v = value.toString();
 
         this.el.forEach(el => {
             const input = this.elementWithValue(el);
 
             if (input) {
-                input.value = value.toString();
+                input.value = v;
             }
         });
+
+        return v;
     }
 
     public focus(index?: number): void {
