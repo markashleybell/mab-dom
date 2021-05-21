@@ -62,11 +62,11 @@ class DOM {
     }
 
     public val(value?: number | string): string {
-        if (!value) {
+        if (typeof value === 'undefined') {
             return this.el.map(el => this.elementWithValue(el)?.value).join();
         }
 
-        const v = value.toString();
+        const v = (value === null ? '' : value).toString();
 
         this.el.forEach(el => {
             const input = this.elementWithValue(el);
