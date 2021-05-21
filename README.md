@@ -1,8 +1,8 @@
 # mab-dom
 
-<!-- [![npm](https://img.shields.io/npm/v/mab-dom)](https://www.npmjs.com/package/mab-dom) -->
+[![npm](https://img.shields.io/npm/v/mab-dom)](https://www.npmjs.com/package/mab-dom)
 
-A very minimal DOM library intended to replace a small subset of jQuery convenience methods.
+A _very_ minimal DOM library, intended to replace a small subset of the jQuery convenience methods.
 
 ## Rationale
 
