@@ -61,26 +61,34 @@ class DOM {
         return new DOM(selector, this.el);
     }
 
-    public val(index?: number): string {
-        const input = (index ? this.el[index] : this.el[0]);
-
-        return this.elementWithValue(input)?.value;
-    }
-
-    public setVal(value: number | string): void {
-        const input = this.el[0];
-
-        const element = this.elementWithValue(input);
-
-        if (element) {
-            element.value = value.toString();
+    public val(value?: number | string): string | void {
+        if (!value) {
+            return this.el.map(el => this.elementWithValue(el)?.value).join();
         }
+
+        this.el.forEach(el => {
+            const input = this.elementWithValue(el);
+
+            if (input) {
+                input.value = value.toString();
+            }
+        });
     }
 
     public focus(index?: number): void {
         const input = (index ? this.el[index] : this.el[0]);
 
         input.focus();
+    }
+
+    public html(html?: string): string {
+        const input = this.el[0];
+
+        if (html) {
+            input.innerHTML = html;
+        }
+
+        return input.innerHTML;
     }
 
     private elementWithValue(el: HTMLElement): ElementWithValueAttribute {
