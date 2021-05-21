@@ -77,6 +77,12 @@ class DOM {
         }
     }
 
+    public focus(index?: number): void {
+        const input = (index ? this.el[index] : this.el[0]);
+
+        input.focus();
+    }
+
     private elementWithValue(el: HTMLElement): ElementWithValueAttribute {
         const isInputType = el instanceof HTMLInputElement
             || el instanceof HTMLSelectElement
