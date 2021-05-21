@@ -2,6 +2,10 @@ export function dom(selector: string) {
     return new DOM(selector);
 }
 
+interface ElementWithValueAttribute {
+    value: string;
+}
+
 class DOM {
     private el: HTMLElement[];
 
@@ -60,12 +64,26 @@ class DOM {
     public val(index?: number): string {
         const input = (index ? this.el[index] : this.el[0]);
 
-        if (input instanceof HTMLSelectElement) {
-            return (input as HTMLSelectElement).value
-        }
+        return this.elementWithValue(input)?.value;
+    }
 
-        return input instanceof HTMLInputElement 
-            ? (input as HTMLInputElement).value 
+    public setVal(value: number | string): void {
+        const input = this.el[0];
+
+        const element = this.elementWithValue(input);
+
+        if (element) {
+            element.value = value.toString();
+        }
+    }
+
+    private elementWithValue(el: HTMLElement): ElementWithValueAttribute {
+        const isInputType = el instanceof HTMLInputElement
+            || el instanceof HTMLSelectElement
+            || el instanceof HTMLTextAreaElement;
+
+        return isInputType
+            ? el as unknown as ElementWithValueAttribute
             : null;
     }
 }
