@@ -6,7 +6,7 @@ interface ElementWithValueAttribute {
     value: string;
 }
 
-class DOM {
+export class DOM {
     private el: HTMLElement[];
 
     constructor(public selectorOrElement: string | HTMLElement | NodeListOf<HTMLElement>, parent?: HTMLElement[]) {
