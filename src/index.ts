@@ -105,6 +105,16 @@ export class DOM {
         return input.innerText;
     }
 
+    public addClass(className: string): DOM {
+        this.el.forEach(el => el.classList.add(className));
+        return this;
+    }
+
+    public removeClass(className: string): DOM {
+        this.el.forEach(el => el.classList.remove(className));
+        return this;
+    }
+
     private elementWithValue(el: HTMLElement): ElementWithValueAttribute {
         const isInputType = el instanceof HTMLInputElement
             || el instanceof HTMLSelectElement
