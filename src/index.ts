@@ -1,5 +1,5 @@
-export function dom(selector: string) {
-    return new DOM(selector);
+export function dom(selectorOrElement: string | HTMLElement | NodeListOf<HTMLElement>) {
+    return new DOM(selectorOrElement);
 }
 
 interface ElementWithValueAttribute {
