@@ -95,6 +95,16 @@ export class DOM {
         return input.innerHTML;
     }
 
+    public text(text?: string): string {
+        const input = this.el[0];
+
+        if (text) {
+            input.innerText = text;
+        }
+
+        return input.innerText;
+    }
+
     private elementWithValue(el: HTMLElement): ElementWithValueAttribute {
         const isInputType = el instanceof HTMLInputElement
             || el instanceof HTMLSelectElement
