@@ -49,6 +49,10 @@ export class DOM {
         this.el.forEach(el => el.addEventListener(event, handler));
     }
 
+    public off(event: string, handler: (e: Event) => void): void {
+        this.el.forEach(el => el.removeEventListener(event, handler));
+    }
+
     public data(key: string): string {
         return this.el.map(el => el.getAttribute('data-' + key)).join();
     }
