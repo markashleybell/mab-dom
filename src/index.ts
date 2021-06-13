@@ -120,7 +120,11 @@ export class DOM {
     }
 
     public each(fn: (el: DOM) => void): void {
-        this.el.forEach(el => fn(dom(el)));
+        this.el.forEach(el => fn(new DOM(el)));
+    }
+
+    public parent(): DOM {
+        return new DOM(this.el[0].parentElement);
     }
 
     private elementWithValue(el: HTMLElement): ElementWithValueAttribute {
