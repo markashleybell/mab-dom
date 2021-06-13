@@ -115,6 +115,10 @@ export class DOM {
         return this;
     }
 
+    public each(fn: (el: DOM) => void): void {
+        this.el.forEach(el => fn(dom(el)));
+    }
+
     private elementWithValue(el: HTMLElement): ElementWithValueAttribute {
         const isInputType = el instanceof HTMLInputElement
             || el instanceof HTMLSelectElement
