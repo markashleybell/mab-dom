@@ -5,7 +5,7 @@ window.dom = dom;
 const main = dom('#main');
 
 main.on('click', e => {
-    console.log('TOP');
+    console.log(e);
 });
 
 main.onchild('.button', 'click', e => {
@@ -17,7 +17,7 @@ main.onchild('[name^=select]', 'change', e => {
 });
 
 main.onchild('[name^=select]', 'change', e => {
-    console.log('TEST');
+    console.log(e);
 });
 
 window.main = main;

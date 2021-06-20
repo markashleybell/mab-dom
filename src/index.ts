@@ -8,6 +8,11 @@ interface ElementWithValueAttribute {
 
 const rootSelector = '~ROOT~';
 
+export class DOMEvent extends Event {
+    public targetElement: HTMLElement;
+    public clickedElement: HTMLElement;
+}
+
 export class DOM {
     private el: HTMLElement[];
     public eventHandlers: Map<string, Map<string, Set<any>>>; // Map<EventName, Map<Selector, Set<Handler>>>
@@ -32,13 +37,17 @@ export class DOM {
         this.eventHandlers = new Map<string, Map<string, Set<any>>>();
     }
 
-    public onchild(childSelector: string, event: string, handler: (e: Event) => void): void {
+    public onchild(childSelector: string, event: string, handler: (e: DOMEvent) => void): void {
         if (!this.el) {
             return;
         }
 
-        const delegatedHandler = (e: Event) => {
-            if ((e.target as HTMLElement).closest(childSelector)) {
+        const delegatedHandler = (e: DOMEvent) => {
+            const clicked = e.target as HTMLElement;
+            const targeted = clicked.closest(childSelector) as HTMLElement;
+            if (targeted) {
+                e.targetElement = targeted;
+                e.clickedElement = clicked;
                 handler(e);
             }
         };
@@ -48,14 +57,22 @@ export class DOM {
         this.el.forEach(el => el.addEventListener(event, delegatedHandler));
     }
 
-    public on(event: string, handler: (e: Event) => void): void {
+    public on(event: string, handler: (e: DOMEvent) => void): void {
         if (!this.el) {
             return;
         }
 
-        this.addHandlerReference(event, handler);
+        const nonDelegatedHandler = (e: DOMEvent) => {
+            const clicked = e.target as HTMLElement;
+            const targeted = e.currentTarget as HTMLElement;
+            e.targetElement = targeted;
+            e.clickedElement = clicked;
+            handler(e);
+        };
 
-        this.el.forEach(el => el.addEventListener(event, handler));
+        this.addHandlerReference(event, nonDelegatedHandler);
+
+        this.el.forEach(el => el.addEventListener(event, nonDelegatedHandler));
     }
 
     public off(event: string): void {
