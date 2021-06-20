@@ -33,7 +33,7 @@ export class DOM {
         }
 
         const delegatedHandler = (e: Event) => {
-            if ((e.target as HTMLElement).matches(childSelector)) {
+            if ((e.target as HTMLElement).closest(childSelector)) {
                 handler(e);
             }
         };
