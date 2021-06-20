@@ -6,8 +6,11 @@ interface ElementWithValueAttribute {
     value: string;
 }
 
+const rootSelector = '~ROOT~';
+
 export class DOM {
     private el: HTMLElement[];
+    public eventHandlers: Map<string, Map<string, Set<any>>>; // Map<EventName, Map<Selector, Set<Handler>>>
 
     constructor(public selectorOrElement: string | HTMLElement | NodeListOf<HTMLElement>, parent?: HTMLElement[]) {
         if (typeof selectorOrElement === 'string') {
@@ -25,6 +28,8 @@ export class DOM {
         } else {
             this.el = [].slice.call(selectorOrElement as NodeListOf<HTMLElement>);
         }
+
+        this.eventHandlers = new Map<string, Map<string, Set<any>>>();
     }
 
     public onchild(childSelector: string, event: string, handler: (e: Event) => void): void {
@@ -38,6 +43,8 @@ export class DOM {
             }
         };
 
+        this.addHandlerReference(event, delegatedHandler, childSelector);
+
         this.el.forEach(el => el.addEventListener(event, delegatedHandler));
     }
 
@@ -46,11 +53,40 @@ export class DOM {
             return;
         }
 
+        this.addHandlerReference(event, handler);
+
         this.el.forEach(el => el.addEventListener(event, handler));
     }
 
-    public off(event: string, handler: (e: Event) => void): void {
-        this.el.forEach(el => el.removeEventListener(event, handler));
+    public off(event: string): void {
+        const handlersForEvent = this.eventHandlers.get(event);
+        this.el.forEach(el => {
+            for (const [selector, handlers] of handlersForEvent) {
+                // If the selector is empty, this is a 'top level' event
+                if (selector == rootSelector) {
+                    handlers.forEach(handler => el.removeEventListener(event, handler));
+                    handlersForEvent.delete(selector);
+                    if (handlersForEvent.size == 0) {
+                        this.eventHandlers.delete(event);
+                    }
+                }
+            }
+        });
+    }
+
+    public offchild(childSelector: string, event: string): void {
+        const handlersForEvent = this.eventHandlers.get(event);
+        this.el.forEach(el => {
+            for (const [selector, handlers] of handlersForEvent) {
+                if (selector === childSelector) {
+                    handlers.forEach(handler => el.removeEventListener(event, handler));
+                    handlersForEvent.delete(selector);
+                    if (handlersForEvent.size == 0) {
+                        this.eventHandlers.delete(event);
+                    }
+                }
+            }
+        });
     }
 
     public data(key: string): string {
@@ -135,5 +171,21 @@ export class DOM {
         return isInputType
             ? el as unknown as ElementWithValueAttribute
             : null;
+    }
+
+    private addHandlerReference(event: string, handler: any, selector?: string): void {
+        if (!this.eventHandlers.has(event)) {
+            this.eventHandlers.set(event, new Map<string, Set<any>>());
+        }
+
+        const handlerMap = this.eventHandlers.get(event);
+
+        const s = selector || rootSelector;
+
+        if (!handlerMap.has(s)) {
+            handlerMap.set(s, new Set<any>());
+        }
+
+        handlerMap.get(s).add(handler);
     }
 }
