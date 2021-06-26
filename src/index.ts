@@ -76,34 +76,48 @@ export class DOM {
     }
 
     public off(event: string): void {
+        if (!this.el) {
+            return;
+        }
+
         const handlersForEvent = this.eventHandlers.get(event);
-        this.el.forEach(el => {
-            for (const [selector, handlers] of handlersForEvent) {
-                // If the selector is empty, this is a 'top level' event
-                if (selector == rootSelector) {
-                    handlers.forEach(handler => el.removeEventListener(event, handler));
-                    handlersForEvent.delete(selector);
-                    if (handlersForEvent.size == 0) {
-                        this.eventHandlers.delete(event);
+
+        if (handlersForEvent) {
+            this.el.forEach(el => {
+                for (const [selector, handlers] of handlersForEvent) {
+                    // If the selector is empty, this is a 'top level' event
+                    if (selector == rootSelector) {
+                        handlers.forEach(handler => el.removeEventListener(event, handler));
+                        handlersForEvent.delete(selector);
+                        if (handlersForEvent.size == 0) {
+                            this.eventHandlers.delete(event);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     public offchild(childSelector: string, event: string): void {
+        if (!this.el) {
+            return;
+        }
+
         const handlersForEvent = this.eventHandlers.get(event);
-        this.el.forEach(el => {
-            for (const [selector, handlers] of handlersForEvent) {
-                if (selector === childSelector) {
-                    handlers.forEach(handler => el.removeEventListener(event, handler));
-                    handlersForEvent.delete(selector);
-                    if (handlersForEvent.size == 0) {
-                        this.eventHandlers.delete(event);
+        
+        if (handlersForEvent) {
+            this.el.forEach(el => {
+                for (const [selector, handlers] of handlersForEvent) {
+                    if (selector === childSelector) {
+                        handlers.forEach(handler => el.removeEventListener(event, handler));
+                        handlersForEvent.delete(selector);
+                        if (handlersForEvent.size == 0) {
+                            this.eventHandlers.delete(event);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     public data(key: string): string {
