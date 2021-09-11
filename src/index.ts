@@ -9,8 +9,10 @@ interface ElementWithValueAttribute {
 const rootSelector = '~ROOT~';
 
 export class DOMEvent extends Event {
-    public targetElement: HTMLElement;
-    public clickedElement: HTMLElement;
+    public handlerAttachedToElement: HTMLElement;
+    public handlerTriggeredByElement: HTMLElement;
+    public handlerChildSelector: string;
+    public handlerElement: HTMLElement;
 }
 
 export class DOM {
@@ -23,7 +25,7 @@ export class DOM {
                 const elements = parent
                     .map(el => [].slice.call(el.querySelectorAll(selectorOrElement)))
                     .filter(x => x.length);
-                
+
                 this.el = [].concat(...elements);
             } else {
                 this.el = [].slice.call(document.querySelectorAll(selectorOrElement as string));
@@ -42,19 +44,22 @@ export class DOM {
             return;
         }
 
-        const delegatedHandler = (e: DOMEvent) => {
-            const clicked = e.target as HTMLElement;
-            const targeted = clicked.closest(childSelector) as HTMLElement;
-            if (targeted) {
-                e.targetElement = targeted;
-                e.clickedElement = clicked;
+        const createDelegatedHandler = (attachedToElement: HTMLElement) => (e: DOMEvent) => {
+            e.handlerAttachedToElement = attachedToElement;
+            e.handlerTriggeredByElement = e.target as HTMLElement;
+            e.handlerElement = e.handlerTriggeredByElement.closest(childSelector);
+            e.handlerChildSelector = childSelector;
+
+            if (e.handlerElement) {
                 handler(e);
             }
         };
 
-        this.addHandlerReference(event, delegatedHandler, childSelector);
-
-        this.el.forEach(el => el.addEventListener(event, delegatedHandler));
+        this.el.forEach(el => {
+            const delegatedHandler = createDelegatedHandler(el);
+            this.addHandlerReference(event, delegatedHandler, childSelector);
+            el.addEventListener(event, delegatedHandler);
+        });
     }
 
     public on(event: string, handler: (e: DOMEvent) => void): void {
@@ -62,17 +67,19 @@ export class DOM {
             return;
         }
 
-        const nonDelegatedHandler = (e: DOMEvent) => {
-            const clicked = e.target as HTMLElement;
-            const targeted = e.currentTarget as HTMLElement;
-            e.targetElement = targeted;
-            e.clickedElement = clicked;
+        const createNonDelegatedHandler = (attachedToElement: HTMLElement) => (e: DOMEvent) => {
+            e.handlerAttachedToElement = attachedToElement;
+            e.handlerTriggeredByElement = e.target as HTMLElement;
+            e.handlerElement = attachedToElement;
+
             handler(e);
         };
 
-        this.addHandlerReference(event, nonDelegatedHandler);
-
-        this.el.forEach(el => el.addEventListener(event, nonDelegatedHandler));
+        this.el.forEach(el => {
+            const nonDelegatedHandler = createNonDelegatedHandler(el);
+            this.addHandlerReference(event, nonDelegatedHandler);
+            el.addEventListener(event, nonDelegatedHandler);
+        });
     }
 
     public off(event: string): void {
@@ -89,7 +96,7 @@ export class DOM {
                     if (selector == rootSelector) {
                         handlers.forEach(handler => el.removeEventListener(event, handler));
                         handlersForEvent.delete(selector);
-                        if (handlersForEvent.size == 0) {
+                        if (handlersForEvent.size === 0) {
                             this.eventHandlers.delete(event);
                         }
                     }
@@ -104,14 +111,14 @@ export class DOM {
         }
 
         const handlersForEvent = this.eventHandlers.get(event);
-        
+
         if (handlersForEvent) {
             this.el.forEach(el => {
                 for (const [selector, handlers] of handlersForEvent) {
                     if (selector === childSelector) {
                         handlers.forEach(handler => el.removeEventListener(event, handler));
                         handlersForEvent.delete(selector);
-                        if (handlersForEvent.size == 0) {
+                        if (handlersForEvent.size === 0) {
                             this.eventHandlers.delete(event);
                         }
                     }
