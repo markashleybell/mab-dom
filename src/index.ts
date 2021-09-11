@@ -135,6 +135,10 @@ export class DOM {
         return index ? this.el[index] : this.el[0];
     }
 
+    public as<T extends HTMLElement>(index?: number): T {
+        return this.get(index) as T;
+    }
+
     public find(selector: string): DOM {
         return new DOM(selector, this.el);
     }
