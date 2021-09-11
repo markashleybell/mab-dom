@@ -205,6 +205,10 @@ export class DOM {
         return new DOM(this.el[0].parentElement);
     }
 
+    public exists(): boolean {
+        return this.el.length > 0;
+    }
+
     private elementWithValue(el: HTMLElement): ElementWithValueAttribute {
         const isInputType = el instanceof HTMLInputElement
             || el instanceof HTMLSelectElement
